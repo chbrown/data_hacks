@@ -105,13 +105,12 @@ def median(values, key=None):
         key = None  # map and sort accept None as identity
     length = len(values)
     if length % 2:
-        median_indeces = [length/2]
+        median_indices = [length // 2]
     else:
-        median_indeces = [length/2-1, length/2]
+        median_indices = [length // 2 - 1, length // 2]
 
     values = sorted(values, key=key)
-    return sum(map(key,
-                   [values[i] for i in median_indeces])) / len(median_indeces)
+    return sum(map(key, [values[i] for i in median_indices])) / len(median_indices)
 
 
 def test_median():
