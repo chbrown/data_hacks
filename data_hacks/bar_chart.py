@@ -26,6 +26,7 @@ from collections import defaultdict
 from optparse import OptionParser
 from decimal import Decimal
 
+
 def load_stream(input_stream):
     for line in input_stream:
         clean_line = line.strip()
@@ -36,6 +37,7 @@ def load_stream(input_stream):
             clean_line = clean_line.strip('"').strip("'")
         if clean_line:
             yield clean_line
+
 
 def run(input_stream, options):
     data = defaultdict(int)
@@ -66,7 +68,7 @@ def run(input_stream, options):
     scale = int(math.ceil(float(max_value) / value_characters))
     scale = max(1, scale)
 
-    print("# each " + options.dot + " represents a count of %d. total %d" % (scale, total))
+    print("# each %s represents a count of %d. total %d" % (options.dot, scale, total))
 
     if options.sort_values:
         data = [[value, key] for key, value in data.items()]

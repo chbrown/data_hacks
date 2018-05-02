@@ -33,7 +33,10 @@ from collections import namedtuple
 
 
 class MVSD(object):
-    "A class that calculates a running Mean / Variance / Standard Deviation"
+    """
+    A class that calculates a running Mean / Variance / Standard Deviation
+    """
+
     def __init__(self):
         self.is_started = False
         self.ss = Decimal(0)  # (running) sum of square deviations from mean
@@ -41,7 +44,9 @@ class MVSD(object):
         self.total_w = Decimal(0)  # weight of items seen
 
     def add(self, x, w=1):
-        "add another datapoint to the Mean / Variance / Standard Deviation"
+        """
+        add another datapoint to the Mean / Variance / Standard Deviation
+        """
         if not isinstance(x, Decimal):
             x = Decimal(x)
         if not self.is_started:
@@ -51,8 +56,7 @@ class MVSD(object):
             self.is_started = True
         else:
             temp_w = self.total_w + w
-            self.ss += (self.total_w * w * (x - self.m) *
-                        (x - self.m)) / temp_w
+            self.ss += (self.total_w * w * (x - self.m) * (x - self.m)) / temp_w
             self.m += (x - self.m) / temp_w
             self.total_w = temp_w
 
@@ -64,6 +68,7 @@ class MVSD(object):
 
     def mean(self):
         return self.m
+
 
 DataPoint = namedtuple('DataPoint', ['value', 'count'])
 
@@ -183,16 +188,18 @@ def histogram(stream, options):
             the size of bucket i.
             For k+1 buckets whose sum is n, we have
             (note, k+1 buckets, since 0 is counted as well):
-                \sum_{i=0}^{k} x*2^i   = n
-                x * \sum_{i=0}^{k} 2^i = n
+                \\sum_{i=0}^{k} x*2^i   = n
+                x * \\sum_{i=0}^{k} 2^i = n
                 x * (2^{k+1} - 1)      = n
                 x = n/(2^{k+1} - 1)
             """
-            return n/(2**(k+1)-1)
+            return n / (2**(k + 1) - 1)
 
         def log_steps(k, n):
-            "k logarithmic steps whose sum is n"
-            x = first_bucket_size(k-1, n)
+            """
+            k logarithmic steps whose sum is n
+            """
+            x = first_bucket_size(k - 1, n)
             total = 0
             for i in range(k):
                 total += 2**i * x
@@ -231,16 +238,14 @@ def histogram(stream, options):
     if max(bucket_counts) > 75:
         bucket_scale = int(max(bucket_counts) / 75)
 
-    print(("# NumSamples = %d; Min = %0.2f; Max = %0.2f" %
-           (samples, min_v, max_v)))
+    print(("# NumSamples = %d; Min = %0.2f; Max = %0.2f" % (samples, min_v, max_v)))
     if skipped:
-        print(("# %d value%s outside of min/max" %
-               (skipped, skipped > 1 and 's' or '')))
+        print(("# %d value%s outside of min/max" % (skipped, skipped > 1 and 's' or '')))
     if options.mvsd:
         print(("# Mean = %f; Variance = %f; SD = %f; Median %f" %
                (mvsd.mean(), mvsd.var(), mvsd.sd(),
                 median(accepted_data, key=lambda x: x.value))))
-    print("# each " + options.dot + " represents a count of %d" % bucket_scale)
+    print("# each %s represents a count of %d" % (options.dot, bucket_scale))
     bucket_min = min_v
     bucket_max = min_v
     percentage = ""
@@ -251,23 +256,21 @@ def histogram(stream, options):
         bucket_count = bucket_counts[bucket]
         star_count = 0
         if bucket_count:
-            star_count = bucket_count / bucket_scale
+            star_count = bucket_count // bucket_scale
         if options.percentage:
-            percentage = " (%0.2f%%)" % (100 * Decimal(bucket_count) /
-                                         Decimal(samples))
-        print(format_string % (bucket_min, bucket_max, bucket_count, options.dot *
-                               star_count, percentage))
+            percentage = " (%0.2f%%)" % (100 * Decimal(bucket_count) / Decimal(samples))
+        print(format_string % (bucket_min, bucket_max, bucket_count, options.dot * star_count, percentage))
 
 
 if __name__ == "__main__":
     parser = OptionParser()
     parser.usage = "cat data | %prog [options]"
     parser.add_option("-a", "--agg", dest="agg_value_key", default=False,
-                      action="store_true", help="Two column input format, " +
-                      "space seperated with value<space>key")
+                      action="store_true",
+                      help="Two column input format, space separated with value<space>key")
     parser.add_option("-A", "--agg-key-value", dest="agg_key_value",
-                      default=False, action="store_true", help="Two column " +
-                      "input format, space seperated with key<space>value")
+                      default=False, action="store_true",
+                      help="Two column input format, space seperated with key<space>value")
     parser.add_option("-m", "--min", dest="min",
                       help="minimum value for graph")
     parser.add_option("-x", "--max", dest="max",
@@ -278,16 +281,17 @@ if __name__ == "__main__":
                       action="store_true",
                       help="Buckets grow in logarithmic scale")
     parser.add_option("-B", "--custom-buckets", dest="custbuckets",
-                      help="Comma seperated list of bucket " +
-                      "edges for the histogram")
+                      help="Comma seperated list of bucket edges for the histogram")
     parser.add_option("--no-mvsd", dest="mvsd", action="store_false",
-                      default=True, help="Disable the calculation of Mean, " +
-                      "Variance and SD (improves performance)")
+                      default=True,
+                      help="Disable the calculation of Mean, Variance and SD (improves performance)")
     parser.add_option("-f", "--bucket-format", dest="format", default="%10.4f",
                       help="format for bucket numbers")
     parser.add_option("-p", "--percentage", dest="percentage", default=False,
-                      action="store_true", help="List percentage for each bar")
-    parser.add_option("--dot", dest="dot", default='∎', help="Dot representation")
+                      action="store_true",
+                      help="List percentage for each bar")
+    parser.add_option("--dot", dest="dot", default='∎',
+                      help="Dot representation")
 
     (options, args) = parser.parse_args()
     if sys.stdin.isatty():
@@ -295,5 +299,4 @@ if __name__ == "__main__":
         parser.print_usage()
         print("for more help use --help")
         sys.exit(1)
-    histogram(load_stream(sys.stdin, options.agg_value_key,
-                          options.agg_key_value), options)
+    histogram(load_stream(sys.stdin, options.agg_value_key, options.agg_key_value), options)

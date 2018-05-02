@@ -25,11 +25,13 @@ import random
 from optparse import OptionParser
 from decimal import Decimal
 
+
 def run(sample_rate):
     input_stream = sys.stdin
     for line in input_stream:
         if random.randint(1, 100) <= sample_rate:
             sys.stdout.write(line)
+
 
 def get_sample_rate(rate_string):
     """ return a rate as a percentage"""
@@ -44,6 +46,7 @@ def get_sample_rate(rate_string):
     if rate < 1 or rate > 100:
         raise ValueError('rate %r must be 1%% <= rate <= 100%% ' % rate_string)
     return rate
+
 
 if __name__ == "__main__":
     parser = OptionParser(usage="cat data | %prog [options] [sample_rate]")
