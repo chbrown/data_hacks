@@ -48,11 +48,10 @@ $ cat /tmp/data | histogram.py --percentage --max=1000 --min=0
   900.0000 -  1000.0000 [     0]:  (0.00%)
 ```
 
-With logarithmic scale
+Another example, using logarithmic scale:
 
 ```console
-$ printf 'import random\nfor i in range(1000):\n print random.randint(0,10000)' | \
-    python - | ./data_hacks/histogram.py -l
+$ python -c 'import random;[print(random.randint(0,10000)) for i in range(10)]' | histogram.py -l
 # NumSamples = 1000; Min = 2.00; Max = 9993.00
 # Mean = 4951.757000; Variance = 8279390.995951; SD = 2877.393090; Median 4828.000000
 # each ∎ represents a count of 6
