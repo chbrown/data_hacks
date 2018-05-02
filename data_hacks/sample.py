@@ -28,7 +28,7 @@ from decimal import Decimal
 def run(sample_rate):
     input_stream = sys.stdin
     for line in input_stream:
-        if random.randint(1,100) <= sample_rate:
+        if random.randint(1, 100) <= sample_rate:
             sys.stdout.write(line)
 
 def get_sample_rate(rate_string):
@@ -36,7 +36,7 @@ def get_sample_rate(rate_string):
     if rate_string.endswith("%"):
         rate = int(rate_string[:-1])
     elif '/' in rate_string:
-        x, y  = rate_string.split('/')
+        x, y = rate_string.split('/')
         rate = Decimal(x) / (Decimal(y) * Decimal('1.0'))
         rate = int(rate * 100)
     else:
@@ -56,10 +56,10 @@ if __name__ == "__main__":
 
     try:
         sample_rate = get_sample_rate(sys.argv[-1])
-    except ValueError, e:
-        print >>sys.stderr, e
+    except ValueError as e:
+        print(e, file=sys.stderr)
         parser.print_usage()
         sys.exit(1)
     if options.verbose:
-        print >>sys.stderr, "Sample rate is %d%%" % sample_rate
+        print("Sample rate is %d%%" % sample_rate, file=sys.stderr)
     run(sample_rate)

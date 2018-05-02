@@ -95,9 +95,9 @@ def load_stream(input_stream, agg_value_key, agg_key_value):
                 yield DataPoint(Decimal(key), int(value))
             else:
                 yield DataPoint(Decimal(clean_line), 1)
-        except:
+        except Exception:
             logging.exception('failed %r', line)
-            print >>sys.stderr, "invalid line %r" % line
+            print("invalid line %r" % line, file=sys.stderr)
 
 
 def median(values, key=None):
@@ -175,7 +175,7 @@ def histogram(stream, options):
         bucket_counts = [0 for x in range(len(boundaries))]
         buckets = len(boundaries)
     elif options.logscale:
-        buckets = options.buckets and int(options.buckets) or 10
+        buckets = int(options.buckets) if options.buckets else 10
         if buckets <= 0:
             raise ValueError('# of buckets must be > 0')
 
@@ -194,15 +194,15 @@ def histogram(stream, options):
         def log_steps(k, n):
             "k logarithmic steps whose sum is n"
             x = first_bucket_size(k-1, n)
-            sum = 0
+            total = 0
             for i in range(k):
-                sum += 2**i * x
-                yield sum
+                total += 2**i * x
+                yield total
         bucket_counts = [0 for x in range(buckets)]
         for step in log_steps(buckets, diff):
             boundaries.append(min_v + step)
     else:
-        buckets = options.buckets and int(options.buckets) or 10
+        buckets = int(options.buckets) if options.buckets else 10
         if buckets <= 0:
             raise ValueError('# of buckets must be > 0')
         step = diff / buckets
@@ -232,16 +232,16 @@ def histogram(stream, options):
     if max(bucket_counts) > 75:
         bucket_scale = int(max(bucket_counts) / 75)
 
-    print("# NumSamples = %d; Min = %0.2f; Max = %0.2f" %
-          (samples, min_v, max_v))
+    print(("# NumSamples = %d; Min = %0.2f; Max = %0.2f" %
+           (samples, min_v, max_v)))
     if skipped:
-        print("# %d value%s outside of min/max" %
-              (skipped, skipped > 1 and 's' or ''))
+        print(("# %d value%s outside of min/max" %
+               (skipped, skipped > 1 and 's' or '')))
     if options.mvsd:
-        print("# Mean = %f; Variance = %f; SD = %f; Median %f" %
-              (mvsd.mean(), mvsd.var(), mvsd.sd(),
-               median(accepted_data, key=lambda x: x.value)))
-    print "# each " + options.dot + " represents a count of %d" % bucket_scale
+        print(("# Mean = %f; Variance = %f; SD = %f; Median %f" %
+               (mvsd.mean(), mvsd.var(), mvsd.sd(),
+                median(accepted_data, key=lambda x: x.value))))
+    print("# each " + options.dot + " represents a count of %d" % bucket_scale)
     bucket_min = min_v
     bucket_max = min_v
     percentage = ""
@@ -256,8 +256,8 @@ def histogram(stream, options):
         if options.percentage:
             percentage = " (%0.2f%%)" % (100 * Decimal(bucket_count) /
                                          Decimal(samples))
-        print format_string % (bucket_min, bucket_max, bucket_count, options.dot *
-                               star_count, percentage)
+        print(format_string % (bucket_min, bucket_max, bucket_count, options.dot *
+                               star_count, percentage))
 
 
 if __name__ == "__main__":
@@ -294,7 +294,7 @@ if __name__ == "__main__":
     if sys.stdin.isatty():
         # if isatty() that means it's run without anything piped into it
         parser.print_usage()
-        print "for more help use --help"
+        print("for more help use --help")
         sys.exit(1)
     histogram(load_stream(sys.stdin, options.agg_value_key,
                           options.agg_key_value), options)
