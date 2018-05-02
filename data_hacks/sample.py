@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# 
+#
 # Copyright 2010 Bitly
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -49,11 +49,11 @@ if __name__ == "__main__":
     parser = OptionParser(usage="cat data | %prog [options] [sample_rate]")
     parser.add_option("--verbose", dest="verbose", default=False, action="store_true")
     (options, args) = parser.parse_args()
-    
+
     if not args or sys.stdin.isatty():
         parser.print_usage()
         sys.exit(1)
-    
+
     try:
         sample_rate = get_sample_rate(sys.argv[-1])
     except ValueError, e:
@@ -61,5 +61,5 @@ if __name__ == "__main__":
         parser.print_usage()
         sys.exit(1)
     if options.verbose:
-        print >>sys.stderr, "Sample rate is %d%%" % sample_rate 
+        print >>sys.stderr, "Sample rate is %d%%" % sample_rate
     run(sample_rate)

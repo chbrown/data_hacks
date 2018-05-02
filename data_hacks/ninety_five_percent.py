@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# 
+#
 # Copyright 2010 Bitly
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -39,7 +39,7 @@ def run():
         except:
             print >>sys.stderr, "invalid line %r" % line
     print calc_95(data, count)
-        
+
 def calc_95(data, count):
     # find the time it took for x entry, where x is the threshold
     threshold = Decimal(count) * Decimal('.95')
